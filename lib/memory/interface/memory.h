@@ -1,4 +1,5 @@
 #ifndef LIB_MEMORY_INTERFACE_MEMORY
+#define LIB_MEMORY_INTERFACE_MEMORY
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -15,5 +16,11 @@ typedef struct{
   bool **matrix;
 }memory;
 
-memory *initializeMemory(uint64_t wordSize, uint64_t totalLocations);
+memory initializeMemory(const uint64_t totalLocations,
+                         const uint64_t wordSize);
+int writeBittoMemory(memory givenMemory, const uint64_t location,
+                      const uint64_t bitinWord, const bool value);
+int readBitfromMemory(const memory givenMemory, const uint64_t location,
+                      const uint64_t bitinWord);
+                      
 #endif
