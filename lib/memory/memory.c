@@ -9,15 +9,12 @@
 #define ERROR_MESSAGE(location,reason,returnValue) ("\nin" location\
                                                     ":\n" reason ", returning "\
                                                     returnValue "\n")
-
 #define INITIALIZE_ERROR_MESSAGE(reason) ERROR_MESSAGE("initializeMemory",\
                                                         reason,\
                                                        "uninitiated memory")
-
 #define WRITE_ERROR_MESSAGE(reason) ERROR_MESSAGE("writeBittoMemory",\
                                                    reason,\
                                                    "-1")
-
 #define READ_ERROR_MESSAGE(reason) ERROR_MESSAGE("readBitfromMemory",\
                                                   reason,\
                                                  "-1")
@@ -144,4 +141,22 @@ int readBitfromMemory (const memory givenMemory, const uint64_t location,
   bool value = givenMemory.matrix[location][bitinWord];
 
   return value;
+}
+
+
+/* size_t sizeofMemory(memory MEMORY):
+ * Takes memory object.
+ * Returns size of the matrix stored in the object, returns 0
+ * if the object is not initialized.
+ */
+size_t sizeofMemory(memory MEMORY){
+  if (!MEMORY.set){
+    printf(ERROR_MESSAGE("sizeofMemory", "memory is not formally initialized",\
+                         "0"));
+    return 0;
+  }
+
+  size_t memorySize = MEMORY.totalLocations * MEMORY.wordSize;
+
+  return memorySize;
 }

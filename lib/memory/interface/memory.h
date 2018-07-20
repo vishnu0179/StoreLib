@@ -22,5 +22,5 @@ int writeBittoMemory(memory givenMemory, const uint64_t location,
                       const uint64_t bitinWord, const bool value);
 int readBitfromMemory(const memory givenMemory, const uint64_t location,
                       const uint64_t bitinWord);
-                      
+size_t sizeofMemory(memory givenMemory);
 #endif
