@@ -1,4 +1,4 @@
-#include "store/storeutil.h"
+//#include "store/storeutil.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -10,7 +10,7 @@
 
 int writeMultiBitstoStore (store STORE, const uint64_t location,
                            const uint64_t wordStartBit, const bool bitArray[],
-                           size_t length)
+                           size_t length){
   if (!STORE.set){
     printf(WRITE_ERROR("STORE is not formally initialized yet",\
                        "returning -1"));
@@ -28,14 +28,15 @@ int writeMultiBitstoStore (store STORE, const uint64_t location,
                        "returning -1"), wordStartBit);
   }
 
+  uint64_t appliedLength = length;
   if((STORE.wordSize - wordStartBit) < length){
     printf(WRITE_ERROR("WARNING: bitArray length is too big to fit in word",\
                        "truncating the bitArray"));
-    length = STORE.wordSize - wordStartBit;
+    appliedlength = STORE.wordSize - wordStartBit;
   }
 
-  for (uint64_t index = 0; index < length; index++){
-    writeBittoStore(STORE, location, wordStartBit, bitArray[index]);
+  for (uint64_t index = 0; index < appliedlength; index++){
+    writeBittoStore(STORE, location, wordStartBit + index, bitArray[index]);
   }
 
   return 0;
