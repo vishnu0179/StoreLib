@@ -1,5 +1,5 @@
-#ifndef LIB_MEMORY_INTERFACE_MEMORY
-#define LIB_MEMORY_INTERFACE_MEMORY
+#ifndef LIB_STORE_STORE_H
+#define LIB_STORE_STORE_H
 #include <stdbool.h>
 #include <stdint.h>
 
