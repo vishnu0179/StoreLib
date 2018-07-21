@@ -2,11 +2,12 @@
 #define LIB_STORE_STORE_H
 #include <stdbool.h>
 #include <stdint.h>
+#include <stddef.h>
 
-/* struct memory:
- * Data structure to hold data of the memory
+/* struct store:
+ * Data structure to hold data of the store
  * and info about the status of the particular
- * memory. Data for matrix should be handled
+ * store. Data for matrix should be handled
  * separately as structure in c is non dynamic.
  */
 typedef struct{
@@ -14,13 +15,13 @@ typedef struct{
   int totalLocations;
   bool set;
   bool **matrix;
-}memory;
+}store;
 
-memory initializeMemory(const uint64_t totalLocations,
-                         const uint64_t wordSize);
-int writeBittoMemory(memory givenMemory, const uint64_t location,
-                      const uint64_t bitinWord, const bool value);
-int readBitfromMemory(const memory givenMemory, const uint64_t location,
-                      const uint64_t bitinWord);
-size_t sizeofMemory(memory givenMemory);
+store initializeStore(const uint64_t totalLocations,
+                      const uint64_t wordSize);
+int writeBittoStore(store givenStore, const uint64_t location,
+                    const uint64_t bitinWord, const bool value);
+int readBitfromStore(const store givenStore, const uint64_t location,
+                     const uint64_t bitinWord);
+size_t sizeofStore(store givenStore);
 #endif

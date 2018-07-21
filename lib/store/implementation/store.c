@@ -2,20 +2,20 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 
-
-#include "interface/memory.h"
+#include "store/store.h"
 
 #define ERROR_MESSAGE(location,reason,returnValue) ("\nin" location\
                                                     ":\n" reason ", returning "\
                                                     returnValue "\n")
-#define INITIALIZE_ERROR_MESSAGE(reason) ERROR_MESSAGE("initializeMemory",\
+#define INITIALIZE_ERROR_MESSAGE(reason) ERROR_MESSAGE("initializeStore",\
                                                         reason,\
-                                                       "uninitiated memory")
-#define WRITE_ERROR_MESSAGE(reason) ERROR_MESSAGE("writeBittoMemory",\
+                                                       "uninitiated store")
+#define WRITE_ERROR_MESSAGE(reason) ERROR_MESSAGE("writeBittoStore",\
                                                    reason,\
                                                    "-1")
-#define READ_ERROR_MESSAGE(reason) ERROR_MESSAGE("readBitfromMemory",\
+#define READ_ERROR_MESSAGE(reason) ERROR_MESSAGE("readBitfromStore",\
                                                   reason,\
                                                  "-1")
 
@@ -25,7 +25,7 @@
 /* bool **createMatrix(uint64_t totalRows, uint64_t totalColumns):
  * Takes total number of rows and columns, and returns a pointer
  * pointing to two dimensional bool array. Returns NULL if unable to
- * allocate memory to any pointer.
+ * allocate store to any pointer.
  * WARNING: giving large values can make program run like a snail, and take
  * for integer to unsigned integer conversions.
  */
@@ -54,109 +54,109 @@ bool **createMatrix(uint64_t totalRows, uint64_t totalColumns){
   return matrix;
 }
 
-/* memory initializeMemory(uint64_t wordSize, uint64_t totalLocations):
- * Takes wordSize and total no. of locations of memory.
- * Returns a memory object and set 'set' bit to 1.
- * Returns uninitiated memory object i.e. all value = 0/NULL, if unable
+/* store initializeStore(uint64_t wordSize, uint64_t totalLocations):
+ * Takes wordSize and total no. of locations of store.
+ * Returns a store object and set 'set' bit to 1.
+ * Returns uninitiated store object i.e. all value = 0/NULL, if unable
  * to allocate space for the matrix pointer.
  * WARNING: giving large values can make program run like a snail, and take
  * care for integer to unsigned integer conversions.
  */
-memory initializeMemory(const uint64_t totalLocations,
+store initializeStore(const uint64_t totalLocations,
                         const uint64_t wordSize){
-  memory MEMORY;
+  store STORE;
 
-  MEMORY.matrix = createMatrix(wordSize, totalLocations);
-  if (MEMORY.matrix == NULL){
+  STORE.matrix = createMatrix(wordSize, totalLocations);
+  if (STORE.matrix == NULL){
     printf(INITIALIZE_ERROR_MESSAGE("unable to allocate space to data matrix"));
-    return MEMORY;
+    return STORE;
   }
 
-  MEMORY.wordSize = wordSize;
-  MEMORY.totalLocations = totalLocations;
-  MEMORY.set = true;
+  STORE.wordSize = wordSize;
+  STORE.totalLocations = totalLocations;
+  STORE.set = true;
 
-  return MEMORY;
+  return STORE;
 }
 
-/* bool writeBittoMemory (memory givenMemory, const uint64_t location,
+/* bool writeBittoStore (store givenStore, const uint64_t location,
                           const uint64_t bitinWord, const bool value):
- * Takes a memory object, location in the matrix with row no. = location,
+ * Takes a store object, location in the matrix with row no. = location,
  * column no. = bitinWord, and the value to be written = value.
  * Returns 0 if written successfully, else returns -1.
  * WARNING: Take care of the integer typecasting while
  * calling the function.
  */
-int writeBittoMemory (memory givenMemory, const uint64_t location,
+int writeBittoStore (store givenStore, const uint64_t location,
                       const uint64_t bitinWord, const bool value){
 
-  if (!givenMemory.set){
-    printf(WRITE_ERROR_MESSAGE("givenMemory isn't formally initialized yet"));
+  if (!givenStore.set){
+    printf(WRITE_ERROR_MESSAGE("givenStore isn't formally initialized yet"));
     return -1;
   }
 
-  if (location >= givenMemory.totalLocations){
+  if (location >= givenStore.totalLocations){
     printf(WRITE_ERROR_MESSAGE("requested 'location' %d out of bound"),
            location);
     return -1;
   }
 
-  if (bitinWord >= givenMemory.wordSize){
+  if (bitinWord >= givenStore.wordSize){
     printf(WRITE_ERROR_MESSAGE("requested 'bit in Word' %d out of bound"),
            bitinWord);
     return -1;
   }
 
-  givenMemory.matrix[location][bitinWord] = value;
+  givenStore.matrix[location][bitinWord] = value;
 
   return 0;
 }
 
-/* int readBitfromMemory (const memory givenMemory, const uint64_t location,
+/* int readBitfromStore (const store givenStore, const uint64_t location,
                           const uint64_t bitinWord):
- * takes memory type object, location number, and bit number in word.
- * Returns value stored at that memory location if successful,
+ * takes store type object, location number, and bit number in word.
+ * Returns value stored at that store location if successful,
  * else returns -1.
  */
-int readBitfromMemory (const memory givenMemory, const uint64_t location,
+int readBitfromStore (const store givenStore, const uint64_t location,
                        const uint64_t bitinWord){
 
-  if(!givenMemory.set){
-    printf(READ_ERROR_MESSAGE("givenMemory is not formally initialized yet"));
+  if(!givenStore.set){
+    printf(READ_ERROR_MESSAGE("givenStore is not formally initialized yet"));
     return -1;
   }
 
-  if (location >= givenMemory.totalLocations){
+  if (location >= givenStore.totalLocations){
     printf(READ_ERROR_MESSAGE("given 'location' %d is out of bound"),
               location);
     return -1;
   }
 
-  if (bitinWord >= givenMemory.wordSize){
+  if (bitinWord >= givenStore.wordSize){
     printf(READ_ERROR_MESSAGE("given 'bit in word' %d is out of bound"),
            bitinWord);
     return -1;
   }
 
-  bool value = givenMemory.matrix[location][bitinWord];
+  bool value = givenStore.matrix[location][bitinWord];
 
   return value;
 }
 
 
-/* size_t sizeofMemory(memory MEMORY):
- * Takes memory object.
+/* size_t sizeofStore(store STORE):
+ * Takes store object.
  * Returns size of the matrix stored in the object, returns 0
  * if the object is not initialized.
  */
-size_t sizeofMemory(memory MEMORY){
-  if (!MEMORY.set){
-    printf(ERROR_MESSAGE("sizeofMemory", "memory is not formally initialized",\
+size_t sizeofStore(store STORE){
+  if (!STORE.set){
+    printf(ERROR_MESSAGE("sizeofStore", "store is not formally initialized",\
                          "0"));
     return 0;
   }
 
-  size_t memorySize = MEMORY.totalLocations * MEMORY.wordSize;
+  size_t storeSize = STORE.totalLocations * STORE.wordSize;
 
-  return memorySize;
+  return storeSize;
 }
