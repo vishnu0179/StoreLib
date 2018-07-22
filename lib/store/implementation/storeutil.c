@@ -45,13 +45,12 @@ int checkStore(const store STORE, const uint64_t location,
 
 
 /* writeMultiBitstoStore (store STORE, const uint64_t location,
-                          const uint64_t wordStartBit, const boll bitArray[],
-                          size_t length):
- * Takes array of bool integers, size of bool arrray, location in store
- * object, and the starting bit in the word to write bool integer array
- * as 'wordStartBit'.
- * Truncates the bool Array if the size provided and wordStartBit provided
- * exceeds the size of the word of STORE object.
+                          const uint64_t wordStartBit, const bool bitArray[],
+                          uint_64 length):
+ * Takes store object, location in store object, bit location in a word of
+ * store, bool array, length of the array.
+ * Truncates the bool Array if (length + wordStartBit) > wordSize of store
+ * object.
  * Returns -1 if STORE object is not initialized, location is greater than
  * equal to totalLocations of STORE object, wordStartBit is greater than
  * equal to STORE's wordSize.
