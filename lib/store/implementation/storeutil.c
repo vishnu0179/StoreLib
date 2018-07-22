@@ -80,9 +80,9 @@ int writeMultiBitstoStore (store STORE, const uint64_t location,
     appliedLength = STORE.wordSize - wordStartBit;
   }
 
-  /* bitArray is stored in store such that, when bit array is converted
-   * into decimal number, highest array index stores most significant bit,
-   * whereas lowest array index stores least significant bit.
+  /* bitArray is stored in store such that, when store word is converted
+   * into decimal number, lowest address word bit stores most significant bit,
+   * whereas highest address word bit stores least significant bit.
    * Loop is designed with that in mind.*/
   for (uint64_t index = 0; index < appliedLength; index++){
     writeBittoStore(STORE, location, wordStartBit + index,
