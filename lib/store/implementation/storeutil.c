@@ -93,9 +93,18 @@ int writeMultiBitstoStore (store STORE, const uint64_t location,
 }
 
 
-
+/* bool *readMultiBitsfromStore (const store STORE, const uint64_t location,
+                              const uint64_t wordStartBit,
+                              uint64_t numberofBits):
+ * Takes store object, location in store, bit location in word of store,
+ * length - number of bits to read from store.
+ * Reads multiple bits from a word of the store and returns array of bool
+ * storing the bits of word from the store.
+ * Retuns NULL if checkStore fails.
+ */
 bool *readMultiBitsfromStore (const store STORE, const uint64_t location,
-                              const uint64_t wordStartBit, uint64_t length){
+                              const uint64_t wordStartBit,
+                              uint64_t numberofBits){
 
   if(checkStore(STORE, location, wordStartBit)){
     printf(ERROR_MESSAGE("readMultiBitsfromStore","checkStore returned -1",
@@ -103,24 +112,25 @@ bool *readMultiBitsfromStore (const store STORE, const uint64_t location,
     return NULL;
   }
 
-  uint64_t appliedLength = length;
+  uint64_t avlNumberofBits = numberofBits;
   /* STORE.wordSize - wordStartBit can't overflow as
    * STORE.wordSize > wordStartBit, thanks to the checking of the same
    * previously.*/
-  if((STORE.wordSize - wordStartBit) < length){
+  if((STORE.wordSize - wordStartBit) < numberofBits){
     printf(ERROR_MESSAGE("readMultiBitsfromStore",
-                         "WARNING: Word length too small to fit in bitArray",
+                         "WARNING: Requested number of bits greater than total"
+                         " bits in Word after wordStartBit",
                          "storing only available bits in bitArray"));
-    appliedLength = STORE.wordSize - wordStartBit;
+    avlNumberofBits = STORE.wordSize - wordStartBit;
   }
 
   /* bitArray stores value(bits) such that, when bit array is converted
    * into decimal number, highest array index stores most significant bit,
    * whereas lowest array index stores least significant bit.
    * Loop is designed with that in mind.*/
-  bool *bitArray = (bool*)malloc(sizeof(bool)*appliedLength);
-  for (uint64_t index = 0; index < appliedLength; index++){
-    bitArray[appliedLength - index - 1] =
+  bool *bitArray = (bool*)malloc(sizeof(bool)*avlNumberofBits);
+  for (uint64_t index = 0; index < avlNumberofBits; index++){
+    bitArray[avlNumberofBits - index - 1] =
      readBitfromStore(STORE, location, wordStartBit + index);
   }
 
@@ -128,6 +138,15 @@ bool *readMultiBitsfromStore (const store STORE, const uint64_t location,
 }
 
 
+/* bool *numbertoBitString(uint64_t number, uint64_t length):
+ * Takes unsigned number and length of bool array to store,
+ * converts number into array of binary digits stored in
+ * bool array. Converts such that most significant bit is the
+ * highest index element, and least significant bit is the lowest
+ * index element.
+ * Returns this bool array.
+ * Exceptions? not found yet.. help me out if you find one.
+ */
 bool *numbertoBitString(uint64_t number, uint64_t length){
   uint64_t actionNumber = number;
   bool *bitString = malloc(sizeof(bool)*length);
@@ -139,28 +158,35 @@ bool *numbertoBitString(uint64_t number, uint64_t length){
   return bitString;
 }
 
+
+/* int writeNumBitstoStore (store STORE, const uint64_t location,
+                         const uint64_t wordStartBit, uint64_t number,
+                         uint64_t length):
+ * Same as writeMultiBitstoStore, but takes number as input to store
+ * in the word. Returns -1 if checkStore fails, else 0.
+ */
 int writeNumBitstoStore (store STORE, const uint64_t location,
                          const uint64_t wordStartBit, uint64_t number,
                          uint64_t length){
-  int checkResult = checkStore(STORE, location, wordStartBit);
-  if(checkResult){
+
+  if(checkStore(STORE, location, wordStartBit)){
     printf(ERROR_MESSAGE("writeNumBitstoStore", "checkStore returned -1",
                          "returning -1"));
     return -1;
   }
 
-  uint64_t availableBits = (length <= (STORE.wordSize - wordStartBit))?
-                            length: (STORE.wordSize - wordStartBit);
-  if (availableBits < 64 && number >= pow(2, availableBits)){
+  uint64_t availableBits = STORE.wordSize - wordStartBit;
+  uint64_t bitstoWrite = (length <= availableBits)?length: availableBits;
+  if (bitstoWrite < 64 && number >= pow(2, bitstoWrite)){
       printf(ERROR_MESSAGE("writeNumBitstoStore",
                            "WARNING: given number is bigger than"
                            " requested bit length",
                            "Truncating the number!"));
-      number %= (uint64_t)pow(2, availableBits);
+      number %= (uint64_t)pow(2, bitstoWrite);
   }
 
-  bool *bitArray = numbertoBitString(number, availableBits);
+  bool *bitArray = numbertoBitString(number, bitstoWrite);
   writeMultiBitstoStore (STORE, location, wordStartBit, bitArray,
-                         availableBits);
+                         bitstoWrite);
   return 0;
 }
