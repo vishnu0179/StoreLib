@@ -1,5 +1,6 @@
 #ifndef LIB_STORE_STORE_H
 #define LIB_STORE_STORE_H
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>

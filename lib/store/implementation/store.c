@@ -1,10 +1,12 @@
+#include "store/store.h"
+
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
 
-#include "store/store.h"
 
 #define ERROR_MESSAGE(location,reason,returnValue) ("\nin" location\
                                                     ":\n" reason ", returning "\
@@ -96,13 +98,13 @@ int writeBittoStore (store givenStore, const uint64_t location,
   }
 
   if (location >= givenStore.totalLocations){
-    printf(WRITE_ERROR_MESSAGE("requested 'location' %d out of bound"),
+    printf(WRITE_ERROR_MESSAGE("requested 'location' %"PRIu64" out of bound"),
            location);
     return -1;
   }
 
   if (bitinWord >= givenStore.wordSize){
-    printf(WRITE_ERROR_MESSAGE("requested 'bit in Word' %d out of bound"),
+    printf(WRITE_ERROR_MESSAGE("requested 'bit in Word' %"PRIu64" out of bound"),
            bitinWord);
     return -1;
   }
@@ -127,13 +129,13 @@ int readBitfromStore (const store givenStore, const uint64_t location,
   }
 
   if (location >= givenStore.totalLocations){
-    printf(READ_ERROR_MESSAGE("given 'location' %d is out of bound"),
+    printf(READ_ERROR_MESSAGE("given 'location' %"PRIu64" is out of bound"),
               location);
     return -1;
   }
 
   if (bitinWord >= givenStore.wordSize){
-    printf(READ_ERROR_MESSAGE("given 'bit in word' %d is out of bound"),
+    printf(READ_ERROR_MESSAGE("given 'bit in word' %"PRIu64" is out of bound"),
            bitinWord);
     return -1;
   }
