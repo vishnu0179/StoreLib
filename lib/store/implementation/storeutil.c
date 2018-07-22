@@ -14,8 +14,18 @@
 #define STORE_ERROR(reason) ERROR_MESSAGE("checkStore",\
                                           reason,"returning -1")
 
+
+/* int checkStore(const store STORE, const uint64_t location,
+               const uint64_t wordStartBit):
+ * Takes store object, location in store, bit in Word in store, and
+ * checks whether
+ *  -store object is initialized,
+ *  -location is in bound for store object,
+ *  -word bit is in bound for store object.
+ * if any of the above is false, RETURNS -1, else RETURNS 0
+ */
 int checkStore(const store STORE, const uint64_t location,
-               const uint64_t wordStartBit){
+               const uint64_t wordBit){
   if (!STORE.set){
     printf(STORE_ERROR("STORE not initialized"));
     return -1;
@@ -24,9 +34,9 @@ int checkStore(const store STORE, const uint64_t location,
     printf(STORE_ERROR("Requested location %"PRIu64" out of bound"), location);
     return -1;
   }
-  if (wordStartBit >= STORE.wordSize){
+  if (wordBit >= STORE.wordSize){
     printf(STORE_ERROR("Requested 'bit in word'%"PRIu64" out of bound"),
-           wordStartBit);
+           wordBit);
     return -1;
   }
 
@@ -46,8 +56,8 @@ int checkStore(const store STORE, const uint64_t location,
  * equal to totalLocations of STORE object, wordStartBit is greater than
  * equal to STORE's wordSize.
  * Returns 0 if write operation successful , even after truncating the array.
- * WARNING: Take care for keeping bitArray's actual length greater than the
- * 'uint64_t length' provided as parameter in the function.
+ * WARNING: Take care for keeping bitArray's actual length greater than
+ * equal to 'uint64_t length' provided as parameter in the function.
  */
 int writeMultiBitstoStore (store STORE, const uint64_t location,
                            const uint64_t wordStartBit, const bool bitArray[],
@@ -145,7 +155,7 @@ int writeNumBitstoStore (store STORE, const uint64_t location,
   if (availableBits < 64 && number >= pow(2, availableBits)){
       printf(ERROR_MESSAGE("writeNumBitstoStore",
                            "WARNING: given number is bigger than"
-                           "requested bit length",
+                           " requested bit length",
                            "Truncating the number!"));
       number %= (uint64_t)pow(2, availableBits);
   }
