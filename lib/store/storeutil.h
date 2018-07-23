@@ -12,5 +12,6 @@ int writeNumBitstoStore (store STORE, const uint64_t location,
 uint64_t readNumBitstoStore (store STORE, const uint64_t location,
                              const uint64_t wordStartBit,
                              uint64_t bitLength);
-
+uint64_t readNumBitsfromStore(store STORE, const uint64_t location,
+                              const uint64_t wordStartBit, uint64_t width);
 #endif

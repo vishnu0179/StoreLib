@@ -15,6 +15,7 @@
                                           reason,"returning -1")
 
 
+
 /* int checkStore(const store STORE, const uint64_t location,
                const uint64_t wordStartBit):
  * Takes store object, location in store, bit in Word in store, and
@@ -42,6 +43,7 @@ int checkStore(const store STORE, const uint64_t location,
 
   return 0;
 }
+
 
 
 /* writeMultiBitstoStore (store STORE, const uint64_t location,
@@ -93,6 +95,7 @@ int writeMultiBitstoStore (store STORE, const uint64_t location,
 }
 
 
+
 /* bool *readMultiBitsfromStore (const store STORE, const uint64_t location,
                               const uint64_t wordStartBit,
                               uint64_t numberofBits):
@@ -138,6 +141,7 @@ bool *readMultiBitsfromStore (const store STORE, const uint64_t location,
 }
 
 
+
 /* bool *numbertoBitString(uint64_t number, uint64_t length):
  * Takes unsigned number and length of bool array to store,
  * converts number into array of binary digits stored in
@@ -157,6 +161,7 @@ bool *numbertoBitString(uint64_t number, uint64_t length){
 
   return bitString;
 }
+
 
 
 /* int writeNumBitstoStore (store STORE, const uint64_t location,
@@ -192,10 +197,43 @@ int writeNumBitstoStore (store STORE, const uint64_t location,
 }
 
 
-uint64_t bitStringtoNumber (bool bitString[], uint16_t length){
+
+/* uint64_t bitStringtoNumber (bool bitString[], uint16_t length):
+ * takes array of bool and length as number of bits to retrieve
+ * from array. Converts bit array into number and returns it.
+ */
+uint64_t bitStringtoNumber (bool bitString[], uint64_t length){
   uint64_t number = 0;
   for (uint16_t index = 0; index < length; index++)
     number = number*2 + bitString[length - index - 1];
+
+  return number;
+}
+
+
+uint64_t readNumBitsfromStore(store STORE, const uint64_t location,
+                              const uint64_t wordStartBit, uint64_t bitWidth){
+  if (checkStore(STORE, location, wordStartBit)){
+    printf(ERROR_MESSAGE("readNumBitsfromStore","checkStore returned -1",
+                          "Returning 0"));
+    return 0;
+  }
+
+  uint64_t availableBits = STORE.wordSize - wordStartBit;
+  uint64_t bitstoRead = bitWidth;
+
+  if(availableBits < bitWidth){
+    printf(ERROR_MESSAGE("readNumBitstoStore",
+                         "available bits in word after wordStartBit less"\
+                         " than requested number of bits",
+                         "returning number of smaller bit "\
+                         "size than requested"));
+    bitstoRead = availableBits;
+  }
+
+  bool *bitArray = readMultiBitsfromStore(STORE, location,
+                                          wordStartBit, bitstoRead);
+  uint64_t number = bitStringtoNumber(bitArray, bitstoRead);
 
   return number;
 }
