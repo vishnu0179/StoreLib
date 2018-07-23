@@ -9,4 +9,8 @@
 int writeNumBitstoStore (store STORE, const uint64_t location,
                          const uint64_t wordStartBit, uint64_t number,
                          uint64_t length);
+uint64_t readNumBitstoStore (store STORE, const uint64_t location,
+                             const uint64_t wordStartBit,
+                             uint64_t bitLength);
+
 #endif
