@@ -190,3 +190,12 @@ int writeNumBitstoStore (store STORE, const uint64_t location,
                          bitstoWrite);
   return 0;
 }
+
+
+uint64_t bitStringtoNumber (bool bitString[], uint16_t length){
+  uint64_t number = 0;
+  for (uint16_t index = 0; index < length; index++)
+    number = number*2 + bitString[length - index - 1];
+
+  return number;
+}
