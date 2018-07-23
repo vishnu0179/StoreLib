@@ -211,6 +211,20 @@ uint64_t bitStringtoNumber (bool bitString[], uint64_t length){
 }
 
 
+
+/* uint64_t readNumBitsfromStore(store STORE, const uint64_t location,
+                                 const uint64_t wordStartBit,
+                                 uint64_t bitWidth):
+ * Reads store width in the form of number from wordStartBit to
+ * wordStartBit + bitWidth - 1, with lowest address as most significant bit
+ * and highest address as least significant bit.
+ *
+ * Takes store object, location in store, bit location in word of store,
+ * and bit width of the number to be read, if bitWidth + wordStartBit
+ * exceeds wordSize, then reads bits till wordSize.
+ * Returns the resulting number.
+ * throws an error and returns 0 when checkStore returns -1.
+ */
 uint64_t readNumBitsfromStore(store STORE, const uint64_t location,
                               const uint64_t wordStartBit, uint64_t bitWidth){
   if (checkStore(STORE, location, wordStartBit)){
