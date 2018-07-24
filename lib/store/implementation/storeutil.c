@@ -205,10 +205,12 @@ int writeNumBitstoStore (store STORE, const uint64_t location,
  * takes array of bool and length as number of bits to retrieve
  * from array. Converts bit array into number and returns it.
  */
-uint64_t bitStringtoNumber (bool bitString[], uint64_t length){
+uint64_t bitStringtoNumber (bool bitString[], uint64_t bitLength){
   uint64_t number = 0;
-  for (uint16_t index = 0; index < length; index++)
-    number = number*2 + bitString[length - index - 1];
+  bitLength = bitLength*!(bitLength/64) + 64*(bool)(bitLength/64);
+
+  for (uint16_t index = 0; index < bitLength; index++)
+    number = number*2 + bitString[bitLength - index - 1];
 
   return number;
 }
