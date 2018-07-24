@@ -9,6 +9,9 @@
 
 #include "store/store.h"
 
+#define BIGENDIAN 0
+#define LITTLEENDIAN 1
+
 #define ERROR_MESSAGE(location,reason,reaction) ("\nin " location ":\n"\
                                                  reason ", " reaction "\n")
 #define STORE_ERROR(reason) ERROR_MESSAGE("checkStore",\
@@ -250,4 +253,72 @@ uint64_t readNumBitsfromStore(store STORE, const uint64_t location,
   uint64_t number = bitStringtoNumber(bitArray, bitstoRead);
 
   return number;
+}
+
+
+
+/* uint64_t bigtoLittleEndian (uint64_t number, unsigned byteLength):
+ * Converts a number in big endian format to little endian format.
+ * Takes number and number of bytes for the number to store.
+ * Returns the converted number.
+ */
+uint64_t bigtoLittleEndian(uint64_t number, unsigned byteLength){
+  //cannot convert number greater than 8 bytes
+  byteLength = byteLength*!(byteLength/8) + 8*(bool)(byteLength/8);
+
+  uint64_t result = 0;
+
+  for (unsigned index = 0; index < byteLength; index++){
+    result = result*256 + number % 256;
+    number /= 256;
+  }
+
+  return result;
+}
+
+
+
+/* int writeBytestoStore (store STORE, uint64_t location,
+                          const uint64_t wordStartBit, uint64_t number,
+                          const bool endianStyle, uint64_t byteLength):
+ * Stores data in store in the form of bytes according to the endian format.
+ * Takes store object, location in the store matrix, starting bit in the
+ * word, total number of bytes, endian style and number as data to store.
+ * Returns the success signal, 0 if successful, else 1.
+ * Fails if checkStore returns -1
+ */
+int writeBytestoStore (store STORE, uint64_t location,
+                       const uint64_t wordStartBit, uint64_t number,
+                       const bool endianStyle, uint64_t byteLength){
+  if (checkStore(STORE, location, wordStartBit)){
+    printf(ERROR_MESSAGE("writeBytestoStore",
+                         "checkStore returned -1",
+                         "Returning -1"));
+    return -1;
+  }
+
+  uint64_t availableBytes = (STORE.wordSize - wordStartBit) / 8;
+  uint64_t bytestoWrite = byteLength;
+  if (availableBytes < byteLength){
+    printf(ERROR_MESSAGE("writeBytestoStore",
+                         "WARNING: available byte length is smaller "\
+                         "than requested byte length ",
+                         "writing at available bytes only."));
+    bytestoWrite = availableBytes;
+  }
+
+
+  if (endianStyle == LITTLEENDIAN){
+    number = bigtoLittleEndian(number, availableBytes);
+  }
+
+  if(writeNumBitstoStore(STORE, location, wordStartBit, number,
+                         bytestoWrite * 8)){
+    printf(ERROR_MESSAGE("writeBytestoStore",
+                         "writeNumBitstoStore returned -1",
+                         "returning -1"));
+    return -1;
+  }
+
+  return 0;
 }
