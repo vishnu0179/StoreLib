@@ -316,7 +316,7 @@ uint64_t invertEndian(uint64_t number, unsigned byteLength){
  */
 int writeBytestoStore (store STORE, uint64_t location,
                        const uint64_t wordStartBit, uint64_t number,
-                       const bool endianStyle, uint64_t byteLength){
+                       uint64_t byteLength, const bool endianStyle){
   if (checkStore(STORE, location, wordStartBit)){
     printf(ERROR_MESSAGE("writeBytestoStore",
                          "checkStore returned -1",
