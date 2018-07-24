@@ -17,4 +17,7 @@ uint64_t readNumBitsfromStore(store STORE, const uint64_t location,
 int writeBytestoStore(store STORE, const uint64_t location,
                       const uint64_t wordStartBit, uint64_t number,
                       bool endianStyle, uint64_t byteLength);
+uint64_t readBytestoStore(const store STORE, const uint64_t location,
+                          const uint64_t wordStartBit, uint64_t byteLength,
+                          const bool endianStyle);
 #endif

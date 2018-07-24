@@ -257,12 +257,39 @@ uint64_t readNumBitsfromStore(store STORE, const uint64_t location,
 
 
 
-/* uint64_t bigtoLittleEndian (uint64_t number, unsigned byteLength):
- * Converts a number in big endian format to little endian format.
- * Takes number and number of bytes for the number to store.
- * Returns the converted number.
+/* uint64_t giveBytestoUse(const uint64_t wordSize, const uint64_t wordStartBit,
+                           const uint64_t byteLength):
+ * gives how many bytes between wordStartBit and wordStartBit + 8*byteLength
+ * in word are available to be used for reading/writing.
+ * Takes total size of word, starting bit in word, total requested byte length.
+ * Returns usable bytes between wordStartBit and wordStartBit + 8*byteLength.
+ * Made to take care of the overflow possibility in word.
  */
-uint64_t bigtoLittleEndian(uint64_t number, unsigned byteLength){
+uint64_t giveBytestoUse (const uint64_t wordSize, const uint64_t wordStartBit,
+                         const uint64_t byteLength){
+  uint64_t availableBytes = (wordSize - wordStartBit) / 8;
+  uint64_t bytestoUse = byteLength;
+  if (availableBytes < byteLength){
+    printf(ERROR_MESSAGE("giveBytestoUse",
+                         "WARNING: available byte length is smaller "\
+                         "than requested byte length ",
+                         "using available bytes only."));
+    bytestoUse = availableBytes;
+  }
+
+  return bytestoUse;
+}
+
+
+
+/* uint64_t invertEndian (uint64_t number, unsigned byteLength):
+ * Invert the endian format fo given number.
+ * Takes number and number of bytes for the number to store.
+ * Returns the inverted number.
+ * Truncates the higher significant bits when number is large to
+ * store in byteLength.
+ */
+uint64_t invertEndian(uint64_t number, unsigned byteLength){
   //cannot convert number greater than 8 bytes
   byteLength = byteLength*!(byteLength/8) + 8*(bool)(byteLength/8);
 
@@ -297,19 +324,11 @@ int writeBytestoStore (store STORE, uint64_t location,
     return -1;
   }
 
-  uint64_t availableBytes = (STORE.wordSize - wordStartBit) / 8;
-  uint64_t bytestoWrite = byteLength;
-  if (availableBytes < byteLength){
-    printf(ERROR_MESSAGE("writeBytestoStore",
-                         "WARNING: available byte length is smaller "\
-                         "than requested byte length ",
-                         "writing at available bytes only."));
-    bytestoWrite = availableBytes;
-  }
-
+  uint64_t bytestoWrite = giveBytestoUse(STORE.wordSize, wordStartBit,
+                                         byteLength);
 
   if (endianStyle == LITTLEENDIAN){
-    number = bigtoLittleEndian(number, availableBytes);
+    number = invertEndian(number, bytestoWrite);
   }
 
   if(writeNumBitstoStore(STORE, location, wordStartBit, number,
@@ -321,4 +340,39 @@ int writeBytestoStore (store STORE, uint64_t location,
   }
 
   return 0;
+}
+
+
+
+/* uint64_t readBytesfromStore (const store STORE, const uint64_t location,
+                                const uint64_t wordStartBit,
+                                const bool endianStyle,
+                                const unsigned byteLength):
+ * Reads data from word of store in the form of bytes.
+ * Takes store object, location in store, wordStartBit, endian style which
+ * is used to store in word, and the number of bytes to read.
+ * Returns number in big endian form.
+ * If something goes wrong, retuns 0.
+ */
+uint64_t readBytesfromStore (const store STORE, const uint64_t location,
+                             const uint64_t wordStartBit,
+                             const unsigned byteLength,
+                             const bool endianStyle){
+  if (checkStore(STORE, location, wordStartBit)){
+    printf(ERROR_MESSAGE("readBytesfromStore", "checkStore return -1",
+                         "returning 0"));
+    return 0;
+  }
+
+  uint64_t bytestoRead = giveBytestoUse(STORE.wordSize, wordStartBit,
+                                        byteLength);
+
+  uint64_t number = readNumBitsfromStore(STORE, location, wordStartBit,
+                                         bytestoRead * 8);
+
+  if (endianStyle == LITTLEENDIAN){
+    number = invertEndian(number, bytestoRead);
+  }
+
+  return number;
 }
