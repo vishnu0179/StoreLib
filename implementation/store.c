@@ -8,18 +8,10 @@
 #include <stddef.h>
 
 
-#define ERROR_MESSAGE(location,reason,returnValue) ("\nin" location\
-                                                    ":\n" reason ", returning "\
-                                                    returnValue "\n")
-#define INITIALIZE_ERROR_MESSAGE(reason) ERROR_MESSAGE("initializeStore",\
-                                                        reason,\
-                                                       "uninitiated store")
-#define WRITE_ERROR_MESSAGE(reason) ERROR_MESSAGE("writeBittoStore",\
-                                                   reason,\
-                                                   "-1")
-#define READ_ERROR_MESSAGE(reason) ERROR_MESSAGE("readBitfromStore",\
-                                                  reason,\
-                                                 "-1")
+#define ERROR_MESSAGE(location,reason,returnValue) ("\nin" location ":\n" reason ", returning " returnValue "\n")
+#define INITIALIZE_ERROR_MESSAGE(reason) ERROR_MESSAGE("initializeStore", reason, "uninitiated store")
+#define WRITE_ERROR_MESSAGE(reason) ERROR_MESSAGE("writeBittoStore", reason, "-1")
+#define READ_ERROR_MESSAGE(reason) ERROR_MESSAGE("readBitfromStore", reason, "-1")
 
 
 
